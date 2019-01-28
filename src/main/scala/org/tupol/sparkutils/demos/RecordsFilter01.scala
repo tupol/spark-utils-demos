@@ -8,11 +8,14 @@ import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
 
 /**
- * spark-submit  -v --master local --deploy-mode client \
+ * spark-submit  -v \
+ * --master local --deploy-mode client \
  * --class org.tupol.sparkutils.demos.RecordsFilter \
  * target/scala-2.11/spark-utils-demos-assembly.jar \
- * RecordsFilter.input.format="text" RecordsFilter.input.path="README.md" \
- * RecordsFilter.output.format="text" RecordsFilter.output.path="tmp/README-FILTERED.md" \
+ * RecordsFilter.input.format="text" \
+ * RecordsFilter.input.path="README.md" \
+ * RecordsFilter.output.format="text" \
+ * RecordsFilter.output.path="tmp/README-FILTERED.md" \
  * RecordsFilter.word-filter="Spark"
  */
 object RecordsFilter extends SparkApp[RecordsFilterContext, Unit] {

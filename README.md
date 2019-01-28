@@ -10,6 +10,7 @@
 - [Demos](#demos)
   - [Preparations](#preparations)
   - [Simple Record Counting](#simple-record-counting)
+  - [Simple Lines Counting](#simple-lines-counting)
 
 ## Audience
 
@@ -256,6 +257,14 @@ By extending the `Configurator[T]` trait we need to provide the implementation o
 In short, a `ValidationNel` holds wither an accumulated list of `Throwable` or the actual result if there were no exceptions.
 We will see more advanced examples in the next demos.
 
+The configuration framework provides a simple way of extracting the data source configuration out of the Typesafe
+`Config`.
+The main function provided by the framework is the `config()` function, which takes a type parameter telling what is the
+type of the class being extracted and the path inside the configuration to extract it from.
+```scala
+  config.extract[FileSourceConfiguration]("input")
+```
+
 So far we decided on how out application context should look like and how we can build it from a configuration instance.
 
 #### Creating the Application
@@ -313,7 +322,92 @@ spark-submit  -v --master local \
 --deploy-mode client \
 --class org.tupol.sparkutils.demos.RecordsCount01 \
 target/scala-2.11/spark-utils-demos-assembly.jar \
+RecordsCount01.input.format="text" \
+RecordsCount01.input.path="README.md"
+```
+
+To check the results one needs to read the console output to find a line like
+`There are ... records in the .... file.`
+
+Notice how the configuration parameters are passed on to our Spark application:
+```
 RecordsCount01.input.format="text"
 RecordsCount01.input.path="README.md"
 ```
 
+All the application parameters need to be prefixed by the application name, as defined by the `appName()` function.
+
+The application parameters in our case define the input source, as we defined it in the `RecordsCount01` factory.
+All the parameters that define the input source are defined with the `RecordsCount01.input` prefix.
+
+Let's see what happens if we do not specify the format by running the following command:
+```
+spark-submit  -v --master local \
+--deploy-mode client \
+--class org.tupol.sparkutils.demos.RecordsCount01 \
+target/scala-2.11/spark-utils-demos-assembly.jar \
+RecordsCount01.input.path="README.md"
+```
+We should see in the logs and exception like the following:
+```
+...
+2019-01-28 07:28:27 ERROR RecordsCount01:75 - RecordsCount01: Job failed.
+ConfigurationException[Invalid configuration. Please check the issue(s) listed bellow:
+- Invalid configuration. Please check the issue(s) listed bellow:
+- No configuration setting found for key 'format']
+...
+```
+
+### Simple Lines Counting
+
+In the simple record count demo we counted the lines of any given input file, no matter the format.
+
+Let's adjust the example so we only accept text files and we count the lines
+
+The only change we need to do to the records count is to enforce the input format to be text.
+The best way to do it is through the application context factory, after extracting the `FileSourceConfiguration`.
+The way to do it is pretty simple, using the `ensure()` function as in the example below:
+```scala
+    config.extract[FileSourceConfiguration]("input")
+      .ensure(new IllegalArgumentException("Only text files are supported").toNel)(source => source.format == FormatType.Text)
+```
+
+The source code for this demo is available in
+[LinesCount01.scala](src/main/scala/org/tupol/sparkutils/demos/LinesCount01.scala).
+
+
+#### Running the Demo
+
+Run the demo with the following command:
+```
+spark-submit  -v \
+--master local --deploy-mode client \
+--class org.tupol.sparkutils.demos.LinesCount01 \
+target/scala-2.11/spark-utils-demos-assembly.jar \
+LinesCount01.input.format="text" \
+LinesCount01.input.path="README.md"
+```
+
+To check the results one needs to read the console output to find a line like
+`There are ... lines in the .... file.`
+
+The count should match the one from the simple record counting demo.
+
+Let's try to see what happens if the format is other than text, by running the following command:
+```
+spark-submit  -v \
+--master local --deploy-mode client \
+--class org.tupol.sparkutils.demos.LinesCount01 \
+target/scala-2.11/spark-utils-demos-assembly.jar \
+LinesCount01.input.format="json" \
+LinesCount01.input.path="README.md"
+```
+
+We should get an exception in the logs like the following:
+```
+...
+2019-01-27 07:01:10 ERROR LinesCount01:75 - LinesCount01: Job failed.
+ConfigurationException[Invalid configuration. Please check the issue(s) listed bellow:
+- Only text files are supported]
+...
+```

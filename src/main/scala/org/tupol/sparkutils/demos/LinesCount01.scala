@@ -8,10 +8,12 @@ import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
 
 /**
- * spark-submit  -v --master local --deploy-mode client \
+ * spark-submit  -v \
+ * --master local --deploy-mode client \
  * --class org.tupol.sparkutils.demos.LinesCount01 \
  * target/scala-2.11/spark-utils-demos-assembly.jar \
- * LinesCount01.input.format="text" LinesCount01.input.path="README.md"
+ * LinesCount01.input.format="text" \
+ * LinesCount01.input.path="README.md"
  */
 object LinesCount01 extends SparkApp[LinesCount01Context, Unit] {
 

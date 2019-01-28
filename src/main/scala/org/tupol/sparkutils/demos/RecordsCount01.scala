@@ -8,10 +8,12 @@ import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
 
 /**
- * spark-submit  -v --master local --deploy-mode client \
+ * spark-submit  -v \
+ * --master local --deploy-mode client \
  * --class org.tupol.sparkutils.demos.RecordsCount01 \
  * target/scala-2.11/spark-utils-demos-assembly.jar \
- * RecordsCount01.input.format="text" RecordsCount01.input.path="README.md"
+ * RecordsCount01.input.format="text" \
+ * RecordsCount01.input.path="README.md"
  */
 object RecordsCount01 extends SparkApp[RecordsCount01Context, Unit] {
 

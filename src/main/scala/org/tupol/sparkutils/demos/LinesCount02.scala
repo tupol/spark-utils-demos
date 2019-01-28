@@ -14,7 +14,7 @@ import org.tupol.utils.config.Configurator
  * target/scala-2.11/spark-utils-demos-assembly.jar \
  * LinesCount02.input.format="text" \
  * LinesCount02.input.path="README.md" \
- * LinesCount02.word-filter="Spark"
+ * LinesCount02.wordFilter="Spark"
  */
 object LinesCount02 extends SparkApp[LinesCount02Context, Unit] {
 
@@ -38,8 +38,8 @@ object LinesCount02Context extends Configurator[LinesCount02Context] {
 
   override def validationNel(config: Config): ValidationNel[Throwable, LinesCount02Context] = {
     config.extract[FileSourceConfiguration]("input")
-      .ensure(new IllegalArgumentException("Only text files are supported").toNel)(_.format == FormatType.Text) |@|
-    config.extract[String]("word-filter") apply
+      .ensure(new IllegalArgumentException("Only 'text' format files are supported").toNel)(_.format == FormatType.Text) |@|
+    config.extract[String]("wordFilter") apply
     LinesCount02Context.apply
   }
 }

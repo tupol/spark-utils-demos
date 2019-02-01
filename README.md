@@ -23,18 +23,18 @@
 
 ### Motivation
 
-All of us can recall the first days of picking up a new technology and running the first “Hello World” or “Count words”
+All of us can recall the first days of picking up a new technology and running the first “*Hello World*” or “*Count words*”
 applications that get us started with a new language or a platform.
 
-Up to a certain point, of exploring and creating demos or prototypes, everything it is nice, but when it comes to creating
-*production ready* configurable applications, we all have a hard time and actually start thinking about the operational
-use of our applications and how they will be deployed to a production system.
-This is the moment where a few lines of beautiful code tend to get cluttered by a lot of configuration, wiring
-and setup.
+Up to a certain point of exploring and creating demos or prototypes everything is nice, but when it comes to creating
+*production ready* configurable applications we all have a hard time and actually start thinking about the operational
+use of our applications and how they will be deployed to a production system. This is the moment when a few lines of
+beautiful code tend to get cluttered by a lot of configuration, wiring and setup.
 
-When it comes to Apache Spark, it gets even more complicated, setting up the Spark context and setting up the input
+When it comes to Apache Spark it gets even more complicated, setting up the Spark context and setting up the input
 sources and outputs.
 It would be really nice to have a simple framework that keeps our Spark code clean and uncluttered.
+
 
 
 ### Audience
@@ -42,9 +42,11 @@ It would be really nice to have a simple framework that keeps our Spark code cle
 Developers starting up into the [Apache Spark](https://spark.apache.org/) application development
 in [Scala](https://www.scala-lang.org/).
 
-Some basic Scala knowledge are required, but nothing too advanced.
+Developers starting up into the Apache Spark application development in Scala.
 
-Also, basic Apache Spark knowledge is crucial to make sense of this presentation.
+Some basic Scala and Apache Spark knowledge is crucial to make sense of this presentation.
+
+This article is not meant as a Scala or an Apache Spark tutorial.
 
 
 ## spark-utils
@@ -53,11 +55,12 @@ Also, basic Apache Spark knowledge is crucial to make sense of this presentation
 across a few years of writing Spark applications that so far helped me starting up new projects and creating
 applications fast and relatively easy.
 
-The main ideas behind building a new Spark application are *logic*, *configuration* and *execution*.
+The main ideas behind building a new Spark application are [*logic*](#logic), [*configuration*](#configuration) and
+[*execution*](#execution).
 
 
 ### Logic
-Any Spark application, or as a matter of fact, any application, needs to **do something**, otherwise it is not very useful.
+Any Spark application, or as a matter of fact any application, needs to **do something**, otherwise it is not very useful.
 The **something** can be as simple as counting words and as complex as needed.
 
 The logic is implemented through the `SparkRunnable` trait, which is comes down to implementing a single function, `run()`.
@@ -109,7 +112,7 @@ We will find more details in the [Execution](#execution) section.
 
 ***2) What about that configuration?***
 
-About the `createContext()` and `appName()` functions we will find out more in the [Context](#configuration) section.
+About the `createContext()` and `appName()` functions we will find out more in the [Configuration](#configuration) section.
 
 ***3) What is the `spark.source()` function and where is it coming from?***
 
@@ -172,7 +175,8 @@ An in-depth description of the configuration framework used is available in the
 In order to get the Spark application going we need to create the Spark context or session.
 
 The `spark-utils` framework is providing the **execution** support out of the box.
-It helps with creating the application configuration and focuses the effort on creating the actual logic.
+It helps with creating the application configuration and focuses the actual development effort on creating the
+application logic.
 The framework provides configuration tools for inputs and outputs, leaving for the developer to create the other
 configuration parameters and assemble them into a case class.
 
@@ -186,6 +190,7 @@ application. The following steps will be performed:
 5. Return the result and exit
 
 The external configuration is passed to the `main()` function in the following ways, in the order specified below:
+
 1. Application parameters; they are passed in a properties style, separated by whitespaces, like
     `app.name.param1=param1value app.name.param2=param2value`.
 2. Configuration file; passed as an argument to `spark-submit --files=..../application.conf`
@@ -196,7 +201,7 @@ The order is important because a parameter defined in the application parameters
     from the `reference.conf`.
 
 ### Failure\[T\] is Always an Option\[T\]
-Almost all the functions exposed by this API van fail so write the code accordingly.
+Almost all the functions exposed by the `spark-utils` API can fail so write the code accordingly.
 In the past all of these functions used to return a `Try[T]` but the API looks much cleaner this way and gives more power
 and more responsibility to the developer.
 
@@ -207,7 +212,7 @@ and more responsibility to the developer.
 In order to build this project and run the demos one needs to have Scala, SBT and Git installed on the local machine.
 
 * Java 6 or higher
-* Scala 2.11,or 2.12
+* Scala 2.11 or 2.12
 * Apache Spark 2.3.X
 
 
@@ -257,7 +262,7 @@ In this case we are using the
 [`Configuration Framework`](https://github.com/tupol/scala-utils/blob/master/docs/configuration-framework.md) that
 gives us a DSL to extract and validate the given configuration.
 The following lines might look a little scary for the developers just starting with Scala, but it is not necessary
-to fully understand the internal to use this pattern:
+to fully understand the internals to use this pattern:
 
 ```scala
 object RecordsCount01Context extends Configurator[RecordsCount01Context] {
@@ -283,7 +288,7 @@ type of the class being extracted and the path inside the configuration to extra
   config.extract[FileSourceConfiguration]("input")
 ```
 
-So far, we decided on how out application context should look like and how we can build it from a configuration instance.
+So far, we decided on how our application context should look like and how we can build it from a configuration instance.
 
 #### Creating the Application
 In order to create our executable Spark application, we need to create an object that extends the `SparkApp` trait and
@@ -309,7 +314,7 @@ In the case of the context creation we can just refer to the previously defined 
 Notice that we are calling the `get()` function on our factory. Our `createContext()` function needs to return a context
 so we kind of have to. But not to worry, the execution will take care of the exception handling.
 
-The last and most important step, we need to define out **logic** by implementing hte `run()` function.
+The last and most important step, we need to define our **logic** by implementing the `run()` function.
 
 ```scala
   override def run(implicit spark: SparkSession, context: RecordsCount01Context): Unit =
@@ -317,7 +322,7 @@ The last and most important step, we need to define out **logic** by implementin
 }
 ```
 
-Out application is quite concise and clean, covering very few lines of code
+Our application is quite concise and clean, covering very few lines of code
 
 ```scala
 object RecordsCount01 extends SparkApp[RecordsCount01Context, Unit] {
@@ -365,7 +370,7 @@ spark-submit -v --master local \
 target/scala-2.11/spark-utils-demos-assembly.jar \
 RecordsCount01.input.path="README.md"
 ```
-We should see in the logs and exception like the following:
+We should see in the logs an exception like the following:
 ```
 ...
 2019-01-28 07:28:27 ERROR RecordsCount01:75 - RecordsCount01: Job failed.
@@ -458,7 +463,7 @@ The context factory change is not big and it looks like the following:
 
 You might have noticed the funky operator `|@|`. This operator is part of the [Scalaz](https://github.com/scalaz/scalaz)
 DSL for constructing applicative expressions. It sounds more complicated that it is, so we can think of it as a way of
-composing or extracted configurations into the final case class.
+composing or extracting configurations into the final case class.
 We will use this pattern a lot in the following examples and demos:
 ```scala
   ...
@@ -476,7 +481,7 @@ The configuration framework provides extractors for most of the primitive types.
 for container types like `Option[T]`, `Either[L, R]`, `Seq[T]` and `Map[String, V]`.
 
 #### Creating the Application
-The logic for counting filtered lines it is not very difficult, so our `run()` function remains trivial:
+The logic for counting filtered lines is not very difficult, so our `run()` function remains trivial:
 ```scala
   override def run(implicit spark: SparkSession, context: LinesCount02Context): Unit = {
     import spark.implicits._
@@ -513,12 +518,12 @@ The source code for this demo is available in
 [LinesCount03.scala](src/main/scala/org/tupol/sparkutils/demos/LinesCount03.scala).
 
 #### Defining the Application Context
-The only changes to the application context are to change the type of `wordFilter` from `String` to `Option[String]`.
+The only change to the application context is to change the type of `wordFilter` from `String` to `Option[String]`.
 The same change needs to be done in the application context factory as well, using
 `config.extract[Option[String]]("wordFilter")` instead of `config.extract[String]("wordFilter")`.
 
 #### Creating the Application
-The logic for counting filtered lines it is not very difficult,so our `run()` function remains trivial:
+The logic for counting filtered lines is not very difficult, so our `run()` function remains trivial:
 ```scala
   override def run(implicit spark: SparkSession, context: LinesCount03Context): Unit = {
     import spark.implicits._
@@ -535,7 +540,7 @@ The logic for counting filtered lines it is not very difficult,so our `run()` fu
 ```
 
 #### Running the Demo
-Run the demo with the defined filter the following command:
+Run the demo with the defined filter using the following command:
 ```
 spark-submit -v \
 --master local --deploy-mode client \
@@ -551,7 +556,7 @@ To check the results, one needs to read the console output to find a line like
 There are ... lines in the ... file containing the word ....
 ```
 
-Run the demo without the defined filter the following command:
+Run the demo without the defined filter using the following command:
 ```
 spark-submit -v \
 --master local --deploy-mode client \
@@ -591,7 +596,7 @@ All the necessary details about the configuration options and usage are availabl
 [here](https://github.com/tupol/spark-utils/blob/master/docs/file-data-sink.md).
 In addition to the `FileSinkConfiguration`, there is also a `JdbcSinkConfiguration`.
 
-The application context factory needs to be adjusted as well, but the change is again trivial:
+The application context factory needs to be adjusted as well, but the change remains trivial:
 ```scala
 ...
     config.extract[FileSinkConfiguration]("output")
@@ -615,10 +620,10 @@ The logic for saving the filtered lines to the output file stubbornly remains ve
 ```
 
 The `filteredRecords.sink()` function is provided by the [`DataSink`](https://github.com/tupol/spark-utils/blob/master/docs/data-sink.md)
-framework and together with the corresponding configurations it can make reading input files really easy.
+framework and together with the corresponding configurations can make reading input files really easy.
 
 #### Running the Demo
-Run the demo with the defined filter the following command:
+Run the demo with the defined filter using the following command:
 ```
 spark-submit -v \
 --master local --deploy-mode client \
@@ -643,8 +648,8 @@ The source code for this demo is available in
 [LinesFilter02.scala](src/main/scala/org/tupol/sparkutils/demos/LinesFilter02.scala).
 
 #### Defining the Application Context
-First, we need to change out `wordFilter` parameter to something more suitable, let's call it `wordsFilter` and give it
-the type
+First, we need to change our `wordFilter` parameter to something more suitable, let's call it `wordsFilter` and give it
+the type `Seq[String]`.
 ```scala
 case class LinesFilter02Context(input: FileSourceConfiguration, output: FileSinkConfiguration, wordsFilter: Set[String])
 ```
@@ -670,8 +675,8 @@ Obviously the logic in this case will be much more complex... no, it won't :)
 
 #### Running the Demo
 At this point we have reached the limit of passing parameters to the application as simple arguments.
-Passing in a structure, like a list or a map requires a different approach.
-We are dealing with this by creating a separate application configuration file, `application.conf` that support Json
+Passing in a structure, like a list or a map, requires a different approach.
+We are dealing with this by creating a separate application configuration file, `application.conf`, that supports Json
 and Hocon format so we can express easily structured data types.
 The name of the configuration file is mandatory to be `application.conf`.
 In our case the [`application.conf`](src/main/resources/LinesFilter02/application.conf) looks as following:
@@ -679,7 +684,7 @@ In our case the [`application.conf`](src/main/resources/LinesFilter02/applicatio
 LinesFilter02.wordsFilter: ["Spark", "DataSource", "DataSink", "framework"]
 ```
 
-Run the demo with the defined filter the following command:
+Run the demo with the defined filter using the following command:
 ```
 spark-submit -v \
 --master local --deploy-mode client \
@@ -701,7 +706,7 @@ Now we have almost all the ingredients provided by `spark-utils`, or at least a 
 There are a few more interesting options for configuration of data source and data sink,
 which we will cover with this demo.
 
-Out simple app will take a structured file containing personal data and make a transformation of height from
+Our simple app will take a structured file containing personal data and make a transformation of height from
 centimeters to inches.
 
 The source code for this demo is available in
@@ -722,7 +727,7 @@ MySparkApp.output.mode="overwrite" \
 MySparkApp.output.path="tmp/MySpakApp.json"
 ```
 
-#### Running the Demo Using Just Application Parameters and External Schema
+#### Running the Demo Using Application Parameters and External Schema
 ```
 spark-submit -v \
 --master local --deploy-mode client \
@@ -768,6 +773,9 @@ target/scala-2.11/spark-utils-demos-assembly.jar
 
 ## References and Links
 
+- [Apache Spark](https://spark.apache.org/)
+- [Scala](https://www.scala-lang.org/)
+- [Scalaz](https://github.com/scalaz/scalaz)
 - [`spark-utils`](https://github.com/tupol/spark-utils)
     - [`SparkRunnable`](https://github.com/tupol/spark-utils/blob/master/docs/spark-runnable.md)
     - [`SparkApp`](https://github.com/tupol/spark-utils/blob/master/docs/spark-app.md)
@@ -778,6 +786,3 @@ target/scala-2.11/spark-utils-demos-assembly.jar
     - [`SimpleSQLProcessor`](https://github.com/tupol/spark-tools/blob/master/docs/simple-sql-processor.md)
 - [`scala-utils`](https://github.com/tupol/scala-utils)
     This project holds the [Configuration Framework](https://github.com/tupol/scala-utils/blob/master/docs/configuration-framework.md) that we used and much more.
-- [Apache Spark](https://spark.apache.org/)
-- [Scala](https://www.scala-lang.org/)
-- [Scalaz](https://github.com/scalaz/scalaz)

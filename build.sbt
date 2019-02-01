@@ -4,9 +4,11 @@ organization := "org.tupol"
 
 scalaVersion := "2.11.12"
 
-val sparkUtilsVersion = "0.3.0"
+val sparkUtilsVersion = "0.3.1"
 
 val sparkVersion = "2.3.2"
+val sparkXmlVersion = "0.4.1"
+val sparkAvroVersion = "4.0.0"
 
 // ------------------------------
 // DEPENDENCIES AND RESOLVERS
@@ -28,8 +30,8 @@ libraryDependencies ++= providedDependencies.map(_ % "provided")
 
 libraryDependencies ++= Seq(
   "org.tupol" %% "spark-utils" % sparkUtilsVersion,
-  "com.databricks" %% "spark-xml" % "0.4.1",
-  "com.databricks" %% "spark-avro" % "4.0.0"
+  "com.databricks" %% "spark-xml" % sparkXmlVersion,
+  "com.databricks" %% "spark-avro" % sparkAvroVersion
 )
 // ------------------------------
 // ASSEMBLY

@@ -4,9 +4,9 @@ organization := "org.tupol"
 
 scalaVersion := "2.11.12"
 
-val sparkUtilsVersion = "0.3.1"
+val sparkUtilsVersion = "0.4.1"
 
-val sparkVersion = "2.3.2"
+val sparkVersion = "2.4.3"
 val sparkXmlVersion = "0.4.1"
 val sparkAvroVersion = "4.0.0"
 
@@ -22,15 +22,21 @@ lazy val providedDependencies = Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion force(),
   "org.apache.spark" %% "spark-sql" % sparkVersion force(),
   "org.apache.spark" %% "spark-mllib" % sparkVersion force(),
-  "org.apache.spark" %% "spark-streaming" % sparkVersion force()
+  "org.apache.spark" %% "spark-streaming" % sparkVersion force(),
+  "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
+  "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion
 )
 
 libraryDependencies ++= providedDependencies.map(_ % "provided")
 
+// Jackson dependencies over Spark and Kafka Versions can be tricky; for Spark 2.4.x we need this override
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7"
+
 libraryDependencies ++= Seq(
   "org.tupol" %% "spark-utils" % sparkUtilsVersion,
-  "com.databricks" %% "spark-xml" % sparkXmlVersion,
-  "com.databricks" %% "spark-avro" % sparkAvroVersion
+  "org.tupol" %% "spark-utils" % sparkUtilsVersion % "test" classifier "tests",
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 // ------------------------------
 // ASSEMBLY

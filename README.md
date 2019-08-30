@@ -3,7 +3,7 @@
 
 ## Motivation
 
-All of us can recall the first days of picking up a new technology and running the first “*Hello World*” or “*Count words*”
+All of us can recall the first days of picking up a new technology and running the first “*Hello, World!*” or “*Count words*”
 applications that get us started with a new language or a platform.
 
 Up to a certain point of exploring and creating demos or prototypes everything is nice, but when it comes to creating
